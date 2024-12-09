@@ -53,7 +53,7 @@ def processor(f):
         def processor(stream):
             return f(stream, *args, **kwargs)
 
-        return processor
+        return update_wrapper(processor, f)
 
     return update_wrapper(new_func, f)
 
@@ -63,12 +63,11 @@ def generator(f):
     unchanged and does not pass through the values as parameter.
     """
 
-    @processor
     def new_func(stream, *args, **kwargs):
         yield from stream
         yield from f(*args, **kwargs)
 
-    return update_wrapper(new_func, f)
+    return update_wrapper(processor(update_wrapper(new_func, f)), f)
 
 
 def copy_filename(new, old):
