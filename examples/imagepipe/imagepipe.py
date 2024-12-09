@@ -8,7 +8,8 @@ import click
 
 
 @click.group(chain=True)
-def cli():
+@click.option('--pdb-step/--no-debug', default=False)
+def cli(pdb_step):
     """This script processes a bunch of images through pillow in a unix
     pipe.  One commands feeds into the next.
 
@@ -21,12 +22,16 @@ def cli():
 
 
 @cli.result_callback()
-def process_commands(processors):
+def process_commands(processors, pdb_step):
     """This result callback is invoked with an iterable of all the chained
     subcommands.  As in this example each subcommand returns a function
     we can chain them together to feed one into the other, similar to how
     a pipe on unix works.
     """
+    if pdb_step:
+        import pdb
+        pdb.set_trace()
+
     # Start with an empty iterable.
     stream = ()
 
